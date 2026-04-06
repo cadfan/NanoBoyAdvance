@@ -110,6 +110,7 @@ std::uint32_t round_pow2_mask(size_t size) {
 int main(int argc, char** argv) {
   std::string rom_path, bios_path, output_path, key_spec;
   int target_frames = 60;
+  bool skip_bios = false;
 
   for (int i = 1; i < argc; ++i) {
     std::string a = argv[i];
@@ -119,6 +120,7 @@ int main(int argc, char** argv) {
     else if (a == "--frames") target_frames = std::stoi(next());
     else if (a == "--output") output_path = next();
     else if (a == "--keys") key_spec = next();
+    else if (a == "--skip-bios") skip_bios = true;
     else {
       std::fprintf(stderr, "unknown arg: %s\n", a.c_str());
       return 2;
@@ -135,6 +137,7 @@ int main(int argc, char** argv) {
   auto capture = std::make_shared<CaptureVideoDevice>();
   config->video_dev = capture;
   config->audio_dev = std::make_shared<nba::NullAudioDevice>();
+  config->skip_bios = skip_bios;
 
   auto core = nba::CreateCore(config);
 
