@@ -134,7 +134,7 @@ auto Bus::Read(u32 address, int access) -> T {
       return ReadOAM<T>(Align<T>(address));
     }
     // ROM (WS0, WS1, WS2)
-    case 0x08 ... 0x0D: {
+    case 0x08: case 0x09: case 0x0A: case 0x0B: case 0x0C: case 0x0D: {
       address = Align<T>(address);
 
       auto sequential = access & Sequential;
@@ -163,7 +163,7 @@ auto Bus::Read(u32 address, int access) -> T {
       return 0;
     }
     // SRAM or FLASH backup
-    case 0x0E ... 0x0F: {
+    case 0x0E: case 0x0F: {
       StopPrefetch();
       Step(wait16[0][0xE]);
 
@@ -234,7 +234,7 @@ void Bus::Write(u32 address, int access, T value) {
       break;
     }
     // ROM (WS0, WS1, WS2)
-    case 0x08 ... 0x0D: {
+    case 0x08: case 0x09: case 0x0A: case 0x0B: case 0x0C: case 0x0D: {
       address = Align<T>(address);
 
       auto sequential = access & Sequential;
@@ -264,7 +264,7 @@ void Bus::Write(u32 address, int access, T value) {
       break;
     }
     // SRAM or FLASH backup
-    case 0x0E ... 0x0F: {
+    case 0x0E: case 0x0F: {
       StopPrefetch();
       Step(wait16[0][0xE]);
 
@@ -316,8 +316,8 @@ auto Bus::ReadOpenBus(u32 address) -> u32 {
     switch(r15 >> 24) {
       // EWRAM, PRAM, VRAM, ROM (16-bit)
       case 0x02:
-      case 0x05 ... 0x06:
-      case 0x08 ... 0x0D: {
+      case 0x05: case 0x06:
+      case 0x08: case 0x09: case 0x0A: case 0x0B: case 0x0C: case 0x0D: {
         word  = cpu.GetFetchedOpcode(1);
         word |= (word << 16);
         break;
@@ -389,7 +389,7 @@ auto Bus::GetHostAddress(u32 address, size_t size) -> u8* {
       break;
     }
     // ROM (WS0, WS1, WS2)
-    case 0x08 ... 0x0D: {
+    case 0x08: case 0x09: case 0x0A: case 0x0B: case 0x0C: case 0x0D: {
       auto offset = address & 0x01FF'FFFF;
       if(offset + size <= rom.size()) {
         return rom.data() + offset;
